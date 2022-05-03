@@ -45,9 +45,29 @@ public class RandomTurnedCar extends Car {
         double newY = this.position.getY() + deltaY;
 
         // calculate position in case the boarder of the game board has been reached
-        setRandomDirection();
+        if (newX < 0) {
+            newX = -newX;
+            this.direction = MAX_ANGLE - this.direction;
+        } else if (newX + this.size.getWidth() > maxX) {
+            newX = 2 * maxX - newX - 2 * this.size.getWidth();
+            this.direction = MAX_ANGLE - this.direction;
+        }
 
+        if (newY < 0) {
+            newY = -newY;
+            this.direction = HALF_ANGLE - this.direction;
+            if (this.direction < 0) {
+                this.direction = MAX_ANGLE + this.direction;
+            }
+        } else if (newY + this.size.getHeight() > maxY) {
+            newY = 2 * maxY - newY - 2 * this.size.getHeight();
+            this.direction = HALF_ANGLE - this.direction;
+            if (this.direction < 0) {
+                this.direction = MAX_ANGLE + this.direction;
+            }
+        }
         // set coordinates
+        setRandomDirection();
         this.position = new Point2D(newX, newY);
     }
 }
