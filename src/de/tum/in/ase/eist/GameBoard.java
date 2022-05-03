@@ -6,8 +6,10 @@ import java.util.List;
 import de.tum.in.ase.eist.audio.AudioPlayerInterface;
 import de.tum.in.ase.eist.car.Car;
 import de.tum.in.ase.eist.car.FastCar;
+import de.tum.in.ase.eist.car.RandomTurnedCar;
 import de.tum.in.ase.eist.car.SlowCar;
 import de.tum.in.ase.eist.collision.Collision;
+import de.tum.in.ase.eist.collision.CollisionTwo;
 import de.tum.in.ase.eist.collision.DefaultCollision;
 
 /**
@@ -18,6 +20,7 @@ public class GameBoard {
 
 	private static final int NUMBER_OF_SLOW_CARS = 5;
 	private static final int NUMBER_OF_TESLA_CARS = 2;
+	private static final int NUMBER_OF_VW_CARS = 3;
 
 	/**
 	 * List of all active cars, does not contain player car.
@@ -72,9 +75,12 @@ public class GameBoard {
 	 * them to the cars list.
 	 */
 	private void createCars() {
-		// TODO Backlog Item 6: Add a new car type
+		// Backlog Item 6: Add a new car type
 		for (int i = 0; i < NUMBER_OF_SLOW_CARS; i++) {
 			this.cars.add(new SlowCar(this.size));
+		}
+		for (int i = 0; i < NUMBER_OF_VW_CARS; i++) {
+			this.cars.add(new RandomTurnedCar(this.size));
 		}
 		for (int i = 0; i < NUMBER_OF_TESLA_CARS; i++) {
 			this.cars.add(new FastCar(this.size));
@@ -191,13 +197,12 @@ public class GameBoard {
 				continue;
 			}
 
-			// TODO Backlog Item 16: Add a new collision type
+			// Backlog Item 16: Add a new collision type
 			/*
 			 * Hint: Make sure to create a subclass of the class Collision and store it in
 			 * the new Collision package. Create a new collision object and check if the
 			 * collision between player car and autonomous car evaluates as expected
 			 */
-
 			Collision collision = new DefaultCollision(player.getCar(), car);
 
 			if (collision.isCrash()) {
@@ -208,14 +213,50 @@ public class GameBoard {
 
 				this.audioPlayer.playCrashSound();
 
-				// TODO Backlog Item 11: The loser car is crunched and stops driving
+				// Backlog Item 11: The loser car is crunched and stops driving
+				loser.isCrunched();
+				loser.drive(size);
 
-				// TODO Backlog Item 11: The player gets notified when he looses or wins the game
+				// Backlog Item 11: The player gets notified when he looses or wins the game
 				/*
 				 * Hint: you should set the attribute gameOutcome accordingly. Use 'isWinner()'
 				 * below for your implementation
 				 */
+				if (isWinner()){
+					gameOutcome = GameOutcome.WON;
+					System.out.println("You won");
+				} else {
+					gameOutcome = GameOutcome.LOST;
+					System.out.println("You lost");
+				}
+			}
 
+			Collision collisionTwo = new CollisionTwo(player.getCar(), car);
+
+			if (collisionTwo.isCrash()) {
+				Car winner = collisionTwo.evaluate();
+				Car loser = collisionTwo.evaluateLoser();
+				printWinner(winner);
+				loserCars.add(loser);
+
+				this.audioPlayer.playCrashSound();
+
+				// Backlog Item 11: The loser car is crunched and stops driving
+				loser.isCrunched();
+				loser.drive(size);
+
+				// Backlog Item 11: The player gets notified when he looses or wins the game
+				/*
+				 * Hint: you should set the attribute gameOutcome accordingly. Use 'isWinner()'
+				 * below for your implementation
+				 */
+				if (isWinner()){
+					gameOutcome = GameOutcome.WON;
+					System.out.println("You won");
+				} else {
+					gameOutcome = GameOutcome.LOST;
+					System.out.println("You lost");
+				}
 			}
 		}
 	}

@@ -6,5 +6,5 @@ package de.tum.in.ase.eist;
 public enum GameOutcome {
 	OPEN,
 	WON,
-	LOST;
+	LOST
 }
